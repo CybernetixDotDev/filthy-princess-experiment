@@ -12,7 +12,7 @@ export function DoorCopy({ progress }: DoorCopyProps) {
       {DOOR_CHOREOGRAPHY.text.map((beat) => (
         <p
           key={beat.copy}
-          className="absolute left-1/2 w-[min(86vw,760px)] -translate-x-1/2 text-center font-mono text-[clamp(0.78rem,2.3vw,1.45rem)] uppercase tracking-[0.34em] text-white"
+          className="absolute left-1/2 w-[calc(100vw-2rem)] max-w-[760px] -translate-x-1/2 px-2 text-center font-mono text-[clamp(0.68rem,3.5vw,1.45rem)] uppercase leading-relaxed tracking-[0.14em] text-white [text-wrap:balance] sm:w-[min(86vw,760px)] sm:px-0 sm:text-[clamp(0.78rem,2.3vw,1.45rem)] sm:tracking-[0.34em]"
           style={{
             top: beat.y,
             opacity: getBeatOpacity(progress, beat.start, beat.end),

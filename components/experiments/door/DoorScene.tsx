@@ -7,6 +7,7 @@ import * as THREE from "three";
 
 import { DOOR_CHOREOGRAPHY } from "@/components/experiments/door/doorConfig";
 import { getDoorTextureBlend } from "@/components/experiments/door/doorProgress";
+import { RealmMenu } from "@/components/experiments/door/RealmMenu";
 import { usePrefersReducedMotion } from "@/lib/animation/usePrefersReducedMotion";
 
 type DoorSceneProps = {
@@ -84,6 +85,7 @@ export function DoorScene({ progress, progressRef }: DoorSceneProps) {
       <color attach="background" args={["#000000"]} />
       <ambientLight intensity={0.08} />
       <DoorArtworkSequence progress={progress} />
+      <RealmMenu progress={progress} progressRef={progressRef} pointerRef={pointerRef} />
       <Dust positions={dustPositions} />
     </>
   );
@@ -201,11 +203,11 @@ function getCameraTarget(progress: number, aspect: number, reducedMotion: boolea
       ? interpolate(path.start, path.start, smoothstep(0, 0.15, cameraProgress))
       : cameraProgress < 0.4
         ? interpolate(path.start, path.slowApproach, smoothstep(0.15, 0.4, cameraProgress))
-        : cameraProgress < 0.7
-          ? interpolate(path.slowApproach, path.imposing, smoothstep(0.4, 0.7, cameraProgress))
-          : cameraProgress < 0.88
-            ? interpolate(path.imposing, path.threshold, smoothstep(0.7, 0.88, cameraProgress))
-            : interpolate(path.threshold, path.crossing, smoothstep(0.88, 1, cameraProgress));
+        : cameraProgress < 0.68
+          ? interpolate(path.slowApproach, path.imposing, smoothstep(0.4, 0.68, cameraProgress))
+          : cameraProgress < 0.8
+            ? interpolate(path.imposing, path.threshold, smoothstep(0.68, 0.8, cameraProgress))
+            : interpolate(path.threshold, path.crossing, smoothstep(0.8, 1, cameraProgress));
 
   return {
     x: point.x,
