@@ -39,6 +39,7 @@ export function DoorFinalLogo({ progress }: DoorFinalLogoProps) {
     <Link
       href={logo.href}
       aria-label={logo.ariaLabel}
+      aria-hidden={!isInteractive}
       tabIndex={isInteractive ? 0 : -1}
       className="absolute z-20 block w-[var(--logo-width-mobile)] max-w-[var(--logo-max-width)] -translate-x-1/2 -translate-y-1/2 rounded-sm outline-none focus-visible:ring-1 focus-visible:ring-white/75 focus-visible:ring-offset-8 focus-visible:ring-offset-black sm:w-[var(--logo-width-tablet)] lg:w-[var(--logo-width-desktop)]"
       style={style}

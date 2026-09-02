@@ -25,7 +25,7 @@ export function RealmPlaceholderPage({ title, copy }: RealmPlaceholderPageProps)
           {copy}
         </p>
         <Link
-          href="/experiments/door"
+          href="/"
           className="mt-10 font-mono text-xs uppercase tracking-[0.28em] text-white/50 outline-none transition hover:text-white focus-visible:text-white focus-visible:ring-1 focus-visible:ring-white/70 focus-visible:ring-offset-8 focus-visible:ring-offset-black"
         >
           Return to the door

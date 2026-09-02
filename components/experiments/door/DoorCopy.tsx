@@ -1,5 +1,7 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
 import { DOOR_CHOREOGRAPHY } from "@/components/experiments/door/doorConfig";
 
 type DoorCopyProps = {
@@ -7,34 +9,76 @@ type DoorCopyProps = {
 };
 
 export function DoorCopy({ progress }: DoorCopyProps) {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 767px)");
+    const update = () => setIsMobile(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener("change", update);
+
+    return () => mediaQuery.removeEventListener("change", update);
+  }, []);
+
   return (
-    <div className="pointer-events-none absolute inset-0 z-10 overflow-hidden">
+    <div className="pointer-events-none absolute inset-0 z-10 pt-[max(16px,env(safe-area-inset-top))] pb-[max(16px,env(safe-area-inset-bottom))]">
       {DOOR_CHOREOGRAPHY.text.map((beat) => (
         <p
           key={beat.copy}
-          className="absolute left-1/2 w-[calc(100vw-2rem)] max-w-[760px] -translate-x-1/2 px-2 text-center font-mono text-[clamp(0.68rem,3.5vw,1.45rem)] uppercase leading-relaxed tracking-[0.14em] text-white [text-wrap:balance] sm:w-[min(86vw,760px)] sm:px-0 sm:text-[clamp(0.78rem,2.3vw,1.45rem)] sm:tracking-[0.34em]"
+          className="absolute left-1/2 w-[min(86vw,760px)] whitespace-pre-line px-0 text-center font-mono text-[clamp(0.78rem,2.3vw,1.45rem)] uppercase leading-relaxed tracking-[0.34em] text-white [overflow-wrap:anywhere] [text-wrap:balance]"
           style={{
-            top: beat.y,
-            opacity: getBeatOpacity(progress, beat.start, beat.end),
+            top: isMobile ? beat.mobileY : beat.y,
+            width: isMobile
+              ? "calc(100vw - 40px - env(safe-area-inset-left) - env(safe-area-inset-right))"
+              : undefined,
+            maxWidth: isMobile ? "88vw" : undefined,
+            whiteSpace: isMobile ? "pre-line" : "normal",
+            fontSize: isMobile
+              ? getMobileFontSize(beat.copy)
+              : beat.copy === "COME INSIDE"
+                ? "clamp(2.34rem, 6.9vw, 4.35rem)"
+                : undefined,
+            letterSpacing: isMobile ? "0.08em" : undefined,
+            opacity: getBeatOpacity(
+              progress,
+              beat.start,
+              beat.end,
+              beat.copy === "you found me." ? DOOR_CHOREOGRAPHY.youFoundMeTiming : undefined,
+            ),
             transform: `translate(-50%, ${getBeatDrift(progress, beat.start, beat.end)}px)`,
             textShadow: "0 0 30px rgba(214, 107, 147, 0.22)",
           }}
         >
-          {beat.copy}
+          {isMobile && beat.mobileCopy ? beat.mobileCopy : beat.copy}
         </p>
       ))}
     </div>
   );
 }
 
-function getBeatOpacity(progress: number, start: number, end: number) {
-  if (progress < start || progress > end) {
+function getMobileFontSize(copy: string) {
+  return copy === "FILTHY PRINCESS" || copy === "COME INSIDE"
+    ? "clamp(2rem, 9vw, 3.5rem)"
+    : "clamp(1.25rem, 5.5vw, 2rem)";
+}
+
+function getBeatOpacity(
+  progress: number,
+  start: number,
+  end: number,
+  lifecycle?: typeof DOOR_CHOREOGRAPHY.youFoundMeTiming,
+) {
+  const enterStart = lifecycle?.enterStart ?? start;
+  const enterComplete = lifecycle?.enterComplete ?? start + (end - start) * 0.28;
+  const exitStart = lifecycle?.exitStart ?? start + (end - start) * 0.72;
+  const exitComplete = lifecycle?.exitComplete ?? end;
+
+  if (progress < enterStart || progress > exitComplete) {
     return 0;
   }
 
-  const localProgress = (progress - start) / (end - start);
-  const fadeIn = smoothstep(0, 0.28, localProgress);
-  const fadeOut = 1 - smoothstep(0.72, 1, localProgress);
+  const fadeIn = smoothstep(enterStart, enterComplete, progress);
+  const fadeOut = 1 - smoothstep(exitStart, exitComplete, progress);
 
   return Math.min(fadeIn, fadeOut);
 }

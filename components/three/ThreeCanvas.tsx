@@ -2,11 +2,30 @@
 
 import { Canvas, type CanvasProps } from "@react-three/fiber";
 import { Suspense, type ReactNode } from "react";
+import { getConsoleFunction, setConsoleFunction } from "three";
 
 import { usePrefersReducedMotion } from "@/lib/animation/usePrefersReducedMotion";
 import { DEFAULT_DPR, REDUCED_MOTION_DPR } from "@/lib/three/constants";
 import { useWebGLAvailable } from "@/lib/three/useWebGLAvailable";
 import { cn } from "@/lib/utils";
+
+const THREE_CLOCK_DEPRECATION_WARNING =
+  "THREE.Clock: This module has been deprecated. Please use THREE.Timer instead.";
+
+const previousThreeConsoleFunction = getConsoleFunction();
+
+setConsoleFunction((type, message, ...params) => {
+  if (type === "warn" && message === THREE_CLOCK_DEPRECATION_WARNING) {
+    return;
+  }
+
+  if (previousThreeConsoleFunction) {
+    previousThreeConsoleFunction(type, message, ...params);
+    return;
+  }
+
+  console[type](message, ...params);
+});
 
 export type ThreeCanvasProps = {
   children: ReactNode;
